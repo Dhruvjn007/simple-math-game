@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>games</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  body { display: flex; justify-content: center; }
+  .wrap {
+    width: 100%;
+    max-width: 520px;
+    padding: calc(48px + env(safe-area-inset-top,0px)) 20px calc(40px + env(safe-area-inset-bottom,0px));
+  }
+  .title { font-size: 15px; color: var(--dim); margin-bottom: 32px; }
+  .cat {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 16px;
+  }
+  .cat:last-child { border-bottom: none; }
+  .cat-name { font-size: 14px; color: var(--fg); }
+  .cat-num { color: var(--dim); margin-right: 10px; }
+  .game-link { font-size: 13px; color: var(--accent); text-decoration: none; white-space: nowrap; }
+  .game-link:hover { text-decoration: underline; }
+  .soon { font-size: 13px; color: var(--dim); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="title">games</div>
+
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">01</span>reaction time</div>
+    <a class="game-link" href="games/reaction/">reaction →</a>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">02</span>working memory</div>
+    <span class="soon">soon</span>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">03</span>long-term memory</div>
+    <span class="soon">soon</span>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">04</span>attention</div>
+    <a class="game-link" href="games/stroop/">stroop →</a>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">05</span>mental calculation</div>
+    <a class="game-link" href="games/calc/">calc →</a>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">06</span>cognitive flexibility</div>
+    <span class="soon">soon</span>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">07</span>inhibitory control</div>
+    <a class="game-link" href="games/gonogo/">go/no-go →</a>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">08</span>divergent thinking</div>
+    <span class="soon">soon</span>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">09</span>spatial reasoning</div>
+    <span class="soon">soon</span>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">10</span>logical reasoning</div>
+    <span class="soon">soon</span>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">11</span>pattern recognition</div>
+    <span class="soon">soon</span>
+  </div>
+  <div class="cat">
+    <div class="cat-name"><span class="cat-num">12</span>executive function</div>
+    <span class="soon">soon</span>
+  </div>
+</div>
+</body>
+</html>

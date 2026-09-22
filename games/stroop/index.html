@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>stroop</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/sound.js"></script>
+<style>
+  .word {
+    font-size: clamp(40px, 12vw, 64px);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    user-select: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="home-link" href="../../">← home</a>
+  <div class="score" id="score">0</div>
+</div>
+
+<div class="stage">
+  <div class="word" id="word">RED</div>
+  <div class="swatch-row" id="row"></div>
+  <div class="hint">tap the color the word is printed in — not what it says</div>
+</div>
+
+<script>
+(function(){
+  var colors = [
+    { name: 'red',    hex: '#e07a7a' },
+    { name: 'green',  hex: '#7fdc7f' },
+    { name: 'blue',   hex: '#7a9fe0' },
+    { name: 'yellow', hex: '#e0d27a' }
+  ];
+
+  var wordEl = document.getElementById('word');
+  var rowEl = document.getElementById('row');
+  var scoreEl = document.getElementById('score');
+
+  var score = 0;
+  var current = null; // { word: colorObj, ink: colorObj }
+  var buttons = [];
+
+  function pick(){ return colors[Math.floor(Math.random() * colors.length)]; }
+
+  function nextTrial(){
+    var wordColor = pick();
+    var inkColor = pick();
+    current = { word: wordColor, ink: inkColor };
+    wordEl.textContent = wordColor.name.toUpperCase();
+    wordEl.style.color = inkColor.hex;
+  }
+
+  function buildButtons(){
+    colors.forEach(function(c){
+      var b = document.createElement('button');
+      b.className = 'swatch';
+      b.style.background = c.hex;
+      b.setAttribute('aria-label', c.name);
+      b.addEventListener('click', function(){ handleAnswer(c, b); });
+      rowEl.appendChild(b);
+      buttons.push(b);
+    });
+  }
+
+  function handleAnswer(c, btn){
+    if (c.name === current.ink.name) {
+      score++;
+      scoreEl.textContent = String(score);
+      SFX.success();
+      wordEl.classList.add('pulse');
+      setTimeout(function(){ wordEl.classList.remove('pulse'); }, 130);
+      nextTrial();
+    } else {
+      SFX.error();
+      btn.classList.add('shake');
+      setTimeout(function(){ btn.classList.remove('shake'); }, 250);
+    }
+  }
+
+  buildButtons();
+  nextTrial();
+})();
+</script>
+</body>
+</html>

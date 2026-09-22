@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>reaction</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/sound.js"></script>
+<style>
+  #zone {
+    background: var(--panel);
+    border: 1px solid var(--border);
+  }
+  #zone.waiting { background: var(--panel); }
+  #zone.ready { background: var(--accent); }
+  #zone.early { background: var(--red); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="home-link" href="../../">← home</a>
+  <div class="score" id="score">best: –</div>
+</div>
+
+<div class="stage">
+  <div class="circle" id="zone">tap to start</div>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+(function(){
+  var zone = document.getElementById('zone');
+  var scoreEl = document.getElementById('score');
+  var resultEl = document.getElementById('result');
+
+  var state = 'idle'; // idle | waiting | ready | early | result
+  var timerId = null;
+  var startTime = 0;
+  var best = null;
+  var times = [];
+
+  function fmt(ms){ return Math.round(ms) + 'ms'; }
+
+  function updateScore(){
+    if (best === null) { scoreEl.textContent = 'best: –'; return; }
+    scoreEl.textContent = 'best: ' + fmt(best);
+  }
+
+  function reset(text){
+    state = 'idle';
+    zone.className = 'circle';
+    zone.textContent = text || 'tap to start';
+  }
+
+  function startRound(){
+    state = 'waiting';
+    zone.className = 'circle waiting';
+    zone.textContent = 'wait for green...';
+    resultEl.textContent = '';
+    var delay = 800 + Math.random() * 2200;
+    timerId = setTimeout(function(){
+      state = 'ready';
+      zone.className = 'circle ready';
+      zone.textContent = 'tap!';
+      startTime = performance.now();
+      SFX.go();
+    }, delay);
+  }
+
+  function handleTap(){
+    if (state === 'idle') {
+      startRound();
+      return;
+    }
+    if (state === 'waiting') {
+      clearTimeout(timerId);
+      SFX.error();
+      zone.className = 'circle early';
+      zone.textContent = 'too soon';
+      state = 'early';
+      resultEl.textContent = 'jumped the gun — tap to retry';
+      return;
+    }
+    if (state === 'ready') {
+      var rt = performance.now() - startTime;
+      times.push(rt);
+      if (times.length > 20) times.shift();
+      if (best === null || rt < best) best = rt;
+      updateScore();
+      SFX.success();
+      var avg = times.reduce(function(a,b){return a+b;},0) / times.length;
+      resultEl.innerHTML = '<b>' + fmt(rt) + '</b> — avg ' + fmt(avg) + ' over ' + times.length;
+      reset('tap to go again');
+      return;
+    }
+    if (state === 'early') {
+      reset();
+      return;
+    }
+  }
+
+  zone.addEventListener('click', function(){
+    zone.classList.add('pressed');
+    setTimeout(function(){ zone.classList.remove('pressed'); }, 90);
+    handleTap();
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.code === 'Space') { e.preventDefault(); handleTap(); }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>go/no-go</title>
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/sound.js"></script>
+<style>
+  #zone { background: var(--panel); border: 1px solid var(--border); color: var(--fg); }
+  #zone.go { background: var(--accent); color: var(--bg); }
+  #zone.nogo { background: var(--red); color: var(--bg); }
+  #zone.correct { outline: 3px solid var(--accent); outline-offset: 4px; }
+  #zone.wrong { outline: 3px solid var(--red); outline-offset: 4px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="home-link" href="../../">← home</a>
+  <div class="score" id="score">trial 0 / 20</div>
+</div>
+
+<div class="stage">
+  <div class="circle" id="zone">tap to start</div>
+  <div class="hint" id="hint">green = tap. red = don't tap.</div>
+</div>
+
+<script>
+(function(){
+  var zone = document.getElementById('zone');
+  var scoreEl = document.getElementById('score');
+  var hintEl = document.getElementById('hint');
+
+  var TOTAL = 20;
+  var STIM_WINDOW = 750;
+  var running = false;
+  var i = 0;
+  var correct = 0;
+  var responded = false;
+  var trialTimeout = null;
+  var trials = [];
+
+  function buildTrials(){
+    trials = [];
+    for (var k = 0; k < TOTAL; k++) {
+      trials.push(Math.random() < 0.7 ? 'go' : 'nogo');
+    }
+  }
+
+  function endTrial(clicked){
+    if (responded) return;
+    responded = true;
+    clearTimeout(trialTimeout);
+    var type = trials[i];
+    var good = (type === 'go') ? clicked : !clicked;
+    if (good) { correct++; SFX.success(); zone.classList.add('correct'); }
+    else { SFX.error(); zone.classList.add('wrong'); }
+    scoreEl.textContent = 'trial ' + (i + 1) + ' / ' + TOTAL;
+    i++;
+    setTimeout(nextTrial, 260);
+  }
+
+  function nextTrial(){
+    if (i >= TOTAL) { finish(); return; }
+    zone.className = 'circle';
+    zone.textContent = '';
+    responded = false;
+    var isi = 350 + Math.random() * 450;
+    setTimeout(function(){
+      var type = trials[i];
+      zone.className = 'circle ' + type;
+      zone.textContent = '';
+      trialTimeout = setTimeout(function(){ endTrial(false); }, STIM_WINDOW);
+    }, isi);
+  }
+
+  function finish(){
+    running = false;
+    zone.className = 'circle';
+    zone.textContent = 'done';
+    hintEl.textContent = correct + ' / ' + TOTAL + ' correct — tap to try again';
+  }
+
+  function start(){
+    running = true;
+    correct = 0;
+    i = 0;
+    hintEl.textContent = "green = tap. red = don't tap.";
+    scoreEl.textContent = 'trial 0 / ' + TOTAL;
+    buildTrials();
+    nextTrial();
+  }
+
+  zone.addEventListener('click', function(){
+    if (!running) { start(); return; }
+    if (!responded) endTrial(true);
+  });
+})();
+</script>
+</body>
+</html>
